@@ -24,13 +24,14 @@ library(knitr)
 library(readxl)
 library("rvest")
 library('xml2')
+library(leaflet)
 
 # INITALIZE CODE CHUNK OPTIONS
 opts_chunk$set(
   warning = FALSE,
   message = FALSE,
   eval=TRUE,
-  echo = TRUE,
+  echo = FALSE,
   cache = FALSE,
   fig.width = 7, 
   fig.align = 'center',
@@ -49,7 +50,7 @@ opts_chunk$set(
 }
 ```
 
-### Canada House Price Summary
+### Canada House Price Summary {.tabset}
 
 The [Multiple Listing Service House Price Index](https://www.crea.ca/housing-market-stats/mls-home-price-index/hpi-tool/) dataset provies information of average home price and price index for various different real estates (Ex. Townhouse, apartment, etc), at different time point. We will use the dataset to plot the average home price at the year of 2022, as well as the percentage of growth of home price from January 2020 to January 2022 for different cities in Canada. We created a scatterplot in Figure 1 representing Average House Price versus Percentage of Growth from Jan 2020 to Jan 2022. By hovering the mouse on the circles on the graph, we can see information including:
 
@@ -65,7 +66,7 @@ house_price_summary <- read_csv("data/canada_house_price_summary_2022.csv")
 ```
 
 ```{r, echo = FALSE}
-house_price_summary %>%
+scatter_p2 <- house_price_summary %>%
   plot_ly(x = ~Composite_Benchmark, y = ~Growth, type = 'scatter', 
           mode = "markers", color = ~Location, size = ~Growth,
           sizes = c(5, 70), marker = list(sizemode = "diameter", opacity = 0.5),
@@ -79,6 +80,112 @@ house_price_summary %>%
          yaxis = list(title = "Percentage of Growth from Jan 2020 to Jan 2022"),
          xaxis = list(title = "Average House Price"),
          hovermodel = "compare")
+```
+
+```{r}
+canada_content <- paste(sep = "<br/>",
+  "<b>Canada</a></b>",
+  "Percentage of Growth: 46.5%",
+  "Average House Price: $825,800"
+)
+victoria_content <- paste(sep = "<br/>",
+  "<b>Victoria</a></b>",
+  "Percentage of Growth: 32.6%",
+  "Average House Price: $920,400"
+)
+vancouver_content <- paste(sep = "<br/>",
+  "<b>Vancouver</a></b>",
+  "Percentage of Growth: 25.0%",
+  "Average House Price: $1,255,200"
+)
+calgary_content <- paste(sep = "<br/>",
+  "<b>Calgary</a></b>",
+  "Percentage of Growth: 14.5%",
+  "Average House Price: $458,800"
+)
+edmonton_content <- paste(sep = "<br/>",
+  "<b>Edmonton</a></b>",
+  "Percentage of Growth: 8.0%",
+  "Average House Price: $339,600"
+)
+saskatoon_content <- paste(sep = "<br/>",
+  "<b>Saskatoon</a></b>",
+  "Percentage of Growth: 13.5%",
+  "Average House Price: $328,600"
+)
+winnipeg_content <- paste(sep = "<br/>",
+  "<b>Winnipeg</a></b>",
+  "Percentage of Growth: 24.3%",
+  "Average House Price: $331,300"
+)
+hamilton_content <- paste(sep = "<br/>",
+  "<b>Hamilton</a></b>",
+  "Percentage of Growth: 64.9%",
+  "Average House Price: $1,058,000"
+)
+ottawa_content <- paste(sep = "<br/>",
+  "<b>Ottawa</a></b>",
+  "Percentage of Growth: 45.9%",
+  "Average House Price: $689,700"
+)
+toronto_content <- paste(sep = "<br/>",
+  "<b>Toronto</a></b>",
+  "Percentage of Growth: 50.6%",
+  "Average House Price: $1,259,900"
+)
+montreal_content <- paste(sep = "<br/>",
+  "<b>Montreal</a></b>",
+  "Total Growth Rate: 42.4%",
+  "Average House Price: $530,100"
+)
+nb_content <- paste(sep = "<br/>",
+  "Percentage of Growth: 55.7%",
+  "Average House Price: $257,000"
+)
+nl_content <- paste(sep = "<br/>",
+  "<b>Newfoundland and Labrador</a></b>",
+  "Percentage of Growth: 20.5%",
+  "Average House Price: $324,800"
+)
+```
+
+```{r}
+cb_pal <- colorNumeric(c("blue", "purple", "red"), 
+                       domain = house_price_summary$Composite_Benchmark, na.color = NA)
+
+map_p1 <- house_price_summary %>%
+  leaflet() %>%
+  addProviderTiles('OpenStreetMap') %>%
+  addCircles(lat = ~lat, lng = ~lon, color = ~cb_pal(Composite_Benchmark),
+             label = ~paste('$',formatC(house_price_summary$Composite_Benchmark, big.mark=',', format = 'f')), 
+             opacity = 1, fillOpacity = 1) %>%
+  addLegend('bottomleft', pal = cb_pal, values = house_price_summary$Composite_Benchmark, 
+            title = "Average House Price", opacity = 1, na.label = NULL) %>%
+  addMarkers(-106.3468, 56.1304, popup = ~canada_content) %>%
+  addMarkers(-123.329773, 48.407326, popup = ~victoria_content) %>%
+  addMarkers(-123.116226, 49.246292, popup = ~vancouver_content) %>%
+  addMarkers(-114.066666, 51.0447, popup = ~calgary_content) %>%
+  addMarkers(-113.4938, 53.5461, popup = ~edmonton_content) %>%
+  addMarkers(-106.6702, 52.1579, popup = ~saskatoon_content) %>%
+  addMarkers(-97.1384, 49.8951, popup = ~winnipeg_content) %>%
+  addMarkers(-79.8711, 43.2557, popup = ~hamilton_content) %>%
+  addMarkers(-75.6972, 45.4215, popup = ~ottawa_content) %>%
+  addMarkers(-79.3832, 43.6532, popup = ~toronto_content) %>%
+  addMarkers(-73.5673, 45.5017, popup = ~montreal_content) %>%
+  addMarkers(-66.4619, 46.5653, popup = ~nb_content) %>%
+  addMarkers(-57.6604, 53.1355, popup = ~nl_content) 
+```
+
+#### Map
+
+```{r}
+map_p1
+```
+
+#### Scatterplot
+
+```{r}
+scatter_p2
 ```
 
 ### Government of Canada Marketable Bonds Average Yield
@@ -130,7 +237,7 @@ fm_stats_df_explore %>%
 
 ### Mortgages in Arrears
 
-From the website [Mortgages in Arrears](https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-sresidential-mortgages-shows-30-year-low-arrears), we scraped the table “Mortgages in arrears (delinquent for 90 or more days) continued downward trend across all lender types”. The table contains information about mortgage in arrears acrosss different lender types from 2020 Q1 to 2021 Q1. An interactive grouped bar chart in Figure 3 was created, displaying the percentage of mortgate in arrears for different mortgage lenders by time. We observe that although the mortgage in arrears increases from 2020 Q1 to 2020 Q2, it has started to decrease after that. The reason of this is because of quantitative easing. 
+From the website [Mortgages in Arrears](https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-residential-mortgages-shows-30-year-low-arrears), we scraped the table “Mortgages in arrears (delinquent for 90 or more days) continued downward trend across all lender types”. The table contains information about mortgage in arrears acrosss different lender types from 2020 Q1 to 2021 Q1. An interactive grouped bar chart in Figure 3 was created, displaying the percentage of mortgate in arrears for different mortgage lenders by time. We observe that although the mortgage in arrears increases from 2020 Q1 to 2020 Q2, it has started to decrease after that. The reason of this is because of quantitative easing. 
 
 ```{r, echo = FALSE}
 url <- "https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-residential-mortgages-shows-30-year-low-arrears"
