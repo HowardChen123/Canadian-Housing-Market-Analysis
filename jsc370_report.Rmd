@@ -576,7 +576,7 @@ tab %>%
   )
 ```
 
-3.  Rise of inflation. Real estate is known to be an investment product that performs well in high-inflation environments, which leads to a higher demand. CPI has rised significantly since 2021, and the trend continues. In fact, inflation in the year of 2021 was 5.14%, and a huge growth for all product groups, as shown in table 6.
+3.  Rise of inflation. Real estate is known to be an investment product that performs well in high-inflation environments, which leads to a higher demand. CPI has raised significantly since 2021, and the trend continues. In fact, inflation in the year of 2021 was 5.14%, and a huge growth for all product groups, as shown in table 6.
 
 ```{r}
 cpi_df %>%

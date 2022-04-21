@@ -9,7 +9,7 @@ output:
 
 <br>
 
-The purpose of this webpage is to showcase some interactive visuals using `plotly`.
+The purpose of this webpage is to showcase some interactive visuals.
 
 <br>
 
@@ -52,7 +52,7 @@ opts_chunk$set(
 
 ### Canada House Price Summary {.tabset}
 
-The [Multiple Listing Service House Price Index](https://www.crea.ca/housing-market-stats/mls-home-price-index/hpi-tool/) dataset provies information of average home price and price index for various different real estates (Ex. Townhouse, apartment, etc), at different time point. We will use the dataset to plot the average home price at the year of 2022, as well as the percentage of growth of home price from January 2020 to January 2022 for different cities in Canada. We created a scatterplot in Figure 1 representing Average House Price versus Percentage of Growth from Jan 2020 to Jan 2022. By hovering the mouse on the circles on the graph, we can see information including:
+The [Multiple Listing Service House Price Index](https://www.crea.ca/housing-market-stats/mls-home-price-index/hpi-tool/) dataset provies information of average home price and price index for various different real estates (Ex. Townhouse, apartment, etc), at different time point. We will use the dataset to plot the average home price at the year of 2022, as well as the percentage of growth of home price from January 2020 to January 2022 for different cities in Canada. We created a map, where you can see the locations of the cities. Moreover, by clicking on the markets on the map, you can see the percentage of growth and the average house price of the city. We also have created a scatterplot in representing Average House Price versus Percentage of Growth from Jan 2020 to Jan 2022. By hovering the mouse on the circles on the graph, we can see information including:
 
 - Location
 - Average House Price
@@ -73,7 +73,7 @@ scatter_p2 <- house_price_summary %>%
           hover_info = "text", text = ~paste(paste("Location: ", Location), 
                                              paste("Average House Price: ", Composite_Benchmark),
                                              paste("Average HPI: ", Composite_HPI),
-                                             paste("Percentage of Growth: ", Growth),
+                                             paste("Percentage of Growth: ", paste(round(Growth, digits = 3)*100, "%")),
                                              sep = "<br>")
           ) %>%
   layout(
@@ -198,6 +198,7 @@ fm_stats_df <- fm_stats_df %>% filter(grepl("^Government of Canada marketable bo
 fm_stats_df$REF_DATE <- as.Date(fm_stats_df$REF_DATE)
 fm_stats_df_explore <- fm_stats_df %>% filter(REF_DATE >= "1980/01/01")
 fm_stats_df_explore <- separate(fm_stats_df_explore, Rates, into = c("Type", "Length"), sep = ": ")
+fm_stats_df_explore <- fm_stats_df_explore %>% drop_na(VALUE)
 ```
 
 ```{r, echo = FALSE}
@@ -237,7 +238,7 @@ fm_stats_df_explore %>%
 
 ### Mortgages in Arrears
 
-From the website [Mortgages in Arrears](https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-residential-mortgages-shows-30-year-low-arrears), we scraped the table “Mortgages in arrears (delinquent for 90 or more days) continued downward trend across all lender types”. The table contains information about mortgage in arrears acrosss different lender types from 2020 Q1 to 2021 Q1. An interactive grouped bar chart in Figure 3 was created, displaying the percentage of mortgate in arrears for different mortgage lenders by time. We observe that although the mortgage in arrears increases from 2020 Q1 to 2020 Q2, it has started to decrease after that. The reason of this is because of quantitative easing. 
+From the website [Mortgages in Arrears](https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-residential-mortgages-shows-30-year-low-arrears), we scraped the table “Mortgages in arrears (delinquent for 90 or more days) continued downward trend across all lender types”. The table contains information about mortgage in arrears across different lender types from 2020 Q1 to 2021 Q1. An interactive grouped bar chart in Figure 3 was created, displaying the percentage of mortgage in arrears for different mortgage lenders by time. We observe that although the mortgage in arrears increases from 2020 Q1 to 2020 Q2, it has started to decrease after that. The reason of this is because of quantitative easing. 
 
 ```{r, echo = FALSE}
 url <- "https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-residential-mortgages-shows-30-year-low-arrears"
@@ -266,6 +267,115 @@ mortgage_arrears_tidy %>%
          xaxis = list(title = "Mortage Lenders"),
          hovermodel = "compare")
 ```
+
+Note that MIEs stands for Mortgage Investment Entities.
+
+
+### CPI during COVID-19 Pandemic
+
+```{r, message=FALSE}
+cpi_df <- read_csv("data/cpi.csv")
+```
+
+```{r}
+all_items <- cpi_df %>% 
+  filter(`Products and product groups` == "All-items") %>%
+  plot_ly(x = ~REF_DATE, y = ~VALUE, type = "scatter",
+          mode = "lines+markers") 
+food <- cpi_df %>% 
+  filter(`Products and product groups` == "Food") %>%
+  plot_ly(x = ~REF_DATE, y = ~VALUE, type = "scatter",
+          mode = "lines+markers") 
+shelter <- cpi_df %>% 
+  filter(`Products and product groups` == "Shelter") %>%
+  plot_ly(x = ~REF_DATE, y = ~VALUE, type = "scatter",
+          mode = "lines+markers")
+clothing <- cpi_df %>% 
+  filter(`Products and product groups` == "Clothing and footwear") %>%
+  plot_ly(x = ~REF_DATE, y = ~VALUE, type = "scatter",
+          mode = "lines+markers")
+health <- cpi_df %>% 
+  filter(`Products and product groups` == "Health and personal care") %>%
+  plot_ly(x = ~REF_DATE, y = ~VALUE, type = "scatter",
+          mode = "lines+markers")
+energy <- cpi_df %>% 
+  filter(`Products and product groups` == "Energy") %>%
+  plot_ly(x = ~REF_DATE, y = ~VALUE, type = "scatter",
+          mode = "lines+markers")
+services <- cpi_df %>% 
+  filter(`Products and product groups` == "Services") %>%
+  plot_ly(x = ~REF_DATE, y = ~VALUE, type = "scatter",
+          mode = "lines+markers")
+
+s1 <- subplot(food, shelter, clothing, health, energy, services, nrows = 3, titleY = FALSE, titleX = FALSE, shareX = TRUE, margin = 0.05)
+annotations = list( 
+  list( 
+    x = 0.22,  
+    y = 1.0,  
+    text = "Food",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.77,  
+    y = 1,  
+    text = "Shelter",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.22,  
+    y = 0.65,  
+    text = "Clothing and Footwear",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),
+  list( 
+    x = 0.77,  
+    y = 0.65,  
+    text = "Health and Personal Care",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),
+  list( 
+    x = 0.22,  
+    y = 0.30,  
+    text = "Energy",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),
+  list( 
+    x = 0.77,  
+    y = 0.30,  
+    text = "Services",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ))
+
+s1 <- s1 %>% layout(annotations = annotations, showlegend = FALSE)
+fig <- subplot(all_items, s1, nrows = 2, margin = 0.05, heights = c(0.25,0.75)) %>% layout(title = "CPI during COVID-19 Pandemic")
+fig
+```
+
+
 
 <br>
 <br>
