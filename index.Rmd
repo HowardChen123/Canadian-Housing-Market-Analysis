@@ -273,6 +273,8 @@ Note that MIEs stands for Mortgage Investment Entities.
 
 ### CPI during COVID-19 Pandemic
 
+Real estate is known to be an investment product that performs well in high-inflation environments, which leads to a higher demand. The interactive visualizations below show that trend of CPI from January 2020 to January 2021, as well as breaking down the CPI for major categories such as food, shelter, clothing and footwear, health and personal care, energy, and services. By hovering mouse onto the markets, you are able to see the exact number of CPI at each time point. We observe that the energy sector has the most price growth, by roughly 50% from April 2020 to Jan 2020. Overall, CPI has raised significantly since 2021, and the not only the trend is increasing, the momentum is increasing as well.
+
 ```{r, message=FALSE}
 cpi_df <- read_csv("data/cpi.csv")
 ```
