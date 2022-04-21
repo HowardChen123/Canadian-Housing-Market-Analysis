@@ -5,8 +5,6 @@ navbar:
   left:
     - text: "Home"
     - href: index.html
-    - text: "Homework 5"
-    - href: hw5.html
   right:
     - icon: fa-github fa-lg
       href: https://github.com/JSC370/jsc370-2022/

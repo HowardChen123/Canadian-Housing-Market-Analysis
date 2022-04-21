@@ -1,0 +1,164 @@
+---
+title: "JSC370 Final Project"
+author: "Yu Hau (Howard) Chen"
+output: 
+    html_document:
+        toc: TRUE
+        toc_float: TRUE
+---
+
+<br>
+
+The purpose of this webpage is to showcase some interactive visuals using `plotly`.
+
+<br>
+
+```{r setup, message=FALSE, echo=FALSE, warning=FALSE}
+
+library(data.table)
+library(tidyverse)
+library(dplyr)
+library(plotly)
+library(DT)
+library(knitr)
+library(readxl)
+library("rvest")
+library('xml2')
+
+# INITALIZE CODE CHUNK OPTIONS
+opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  eval=TRUE,
+  echo = TRUE,
+  cache = FALSE,
+  fig.width = 7, 
+  fig.align = 'center',
+  fig.asp = 0.618,
+  out.width = "700px",
+  class.source = "code-r")
+```
+
+```{css, echo = FALSE}
+.code-r { /* Code block */
+  font-size: 15px;
+}
+
+.code-r-small { /* Code block */
+  font-size: 10px;
+}
+```
+
+### Canada House Price Summary
+
+The [Multiple Listing Service House Price Index](https://www.crea.ca/housing-market-stats/mls-home-price-index/hpi-tool/) dataset provies information of average home price and price index for various different real estates (Ex. Townhouse, apartment, etc), at different time point. We will use the dataset to plot the average home price at the year of 2022, as well as the percentage of growth of home price from January 2020 to January 2022 for different cities in Canada. We created a scatterplot in Figure 1 representing Average House Price versus Percentage of Growth from Jan 2020 to Jan 2022. By hovering the mouse on the circles on the graph, we can see information including:
+
+- Location
+- Average House Price
+- Average HPI (House Price Index)
+- Percentage of Growth
+
+From the graph, we observe that the cities that have both high price and high growth are Toronto and Hamilton. We also observe that inland cities such as Edmonton, Calgary, Winnipeg, and Saskatoon generally has relatively lower price and lower growth.
+
+```{r, echo = FALSE, message = FALSE}
+house_price_summary <- read_csv("data/canada_house_price_summary_2022.csv")
+```
+
+```{r, echo = FALSE}
+house_price_summary %>%
+  plot_ly(x = ~Composite_Benchmark, y = ~Growth, type = 'scatter', 
+          mode = "markers", color = ~Location, size = ~Growth,
+          sizes = c(5, 70), marker = list(sizemode = "diameter", opacity = 0.5),
+          hover_info = "text", text = ~paste(paste("Location: ", Location), 
+                                             paste("Average House Price: ", Composite_Benchmark),
+                                             paste("Average HPI: ", Composite_HPI),
+                                             paste("Percentage of Growth: ", Growth),
+                                             sep = "<br>")
+          ) %>%
+  layout(
+         yaxis = list(title = "Percentage of Growth from Jan 2020 to Jan 2022"),
+         xaxis = list(title = "Average House Price"),
+         hovermodel = "compare")
+```
+
+### Government of Canada Marketable Bonds Average Yield
+
+The [Financial Market Statistics](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1010014501) dataset provides information about various financial market rates such as bank rate, interest rates, government bond yields, treasury bills, etc, on a weekly basis. For this interactive visualization, we will only be looking at the Government of Canada marketable bonds average yields. We created an interactive time series plot in Figure 2, with range slider that allows users to pan and zoom the X-axis, and range selector buttons that allow users to easily set the range of x-axis, that shows the yields of the bonds with different maturity from 1980 to 2022. We observe that there is an overall decreasing trend of bond yields. This caused by various factors, In the 1990s, inflation decline, which leads to increase in demand of government bonds, that further drives up the bond price and decreases bond yields. In the 2000s, investors and central bank has increases purchases of government bonds as it was an emerging market, and more recently, yields dropped close to zero due to quantitative easing and monetary policies.
+
+```{r, echo=FALSE, message=FALSE}
+fm_stats_df <- read_csv("Data/Financial Markets/10100145.csv")
+fm_stats_df <- fm_stats_df %>% filter(grepl("^Government of Canada marketable bonds*", Rates))
+fm_stats_df$REF_DATE <- as.Date(fm_stats_df$REF_DATE)
+fm_stats_df_explore <- fm_stats_df %>% filter(REF_DATE >= "1980/01/01")
+fm_stats_df_explore <- separate(fm_stats_df_explore, Rates, into = c("Type", "Length"), sep = ": ")
+```
+
+```{r, echo = FALSE}
+fm_stats_df_explore %>%
+  plot_ly(x = ~REF_DATE, y = ~VALUE, color = ~Length, type = "scatter",
+          mode = "lines") %>%
+  layout(
+         yaxis = list(title = "Rate (%)"),
+         xaxis = list(title = "Date",
+      rangeselector = list(
+        buttons = list(
+          list(
+            count = 3,
+            label = "3 mo",
+            step = "month",
+            stepmode = "backward"),
+          list(
+            count = 6,
+            label = "6 mo",
+            step = "month",
+            stepmode = "backward"),
+          list(
+            count = 1,
+            label = "1 yr",
+            step = "year",
+            stepmode = "backward"),
+          list(
+            count = 1,
+            label = "YTD",
+            step = "year",
+            stepmode = "todate"),
+          list(step = "all"))),
+
+      rangeslider = list(type = "date")),
+         hovermodel = "compare")
+```
+
+### Mortgages in Arrears
+
+From the website [Mortgages in Arrears](https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-sresidential-mortgages-shows-30-year-low-arrears), we scraped the table “Mortgages in arrears (delinquent for 90 or more days) continued downward trend across all lender types”. The table contains information about mortgage in arrears acrosss different lender types from 2020 Q1 to 2021 Q1. An interactive grouped bar chart in Figure 3 was created, displaying the percentage of mortgate in arrears for different mortgage lenders by time. We observe that although the mortgage in arrears increases from 2020 Q1 to 2020 Q2, it has started to decrease after that. The reason of this is because of quantitative easing. 
+
+```{r, echo = FALSE}
+url <- "https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-residential-mortgages-shows-30-year-low-arrears"
+mortgage_arrears <- read_html(url)
+table <- xml_find_all(mortgage_arrears, xpath='/html/body/div[3]/main/section/div[9]/div/figure/div/div[2]/div/table')
+table <- html_table(table)
+mortgage_arrears_df <- data.frame(t(table[[1]]))
+colnames(mortgage_arrears_df) <- mortgage_arrears_df[1,]
+mortgage_arrears_df <- mortgage_arrears_df[-1, ]
+mortgage_arrears_df <- cbind(`Mortgage Lenders` = rownames(mortgage_arrears_df), mortgage_arrears_df)
+rownames(mortgage_arrears_df) <- 1:nrow(mortgage_arrears_df)
+mortgage_arrears_df$`Mortgage Lenders`[3] <- "Other non-bank lenders"
+mortgage_arrears_tidy <- mortgage_arrears_df %>% 
+                         tidyr::pivot_longer(
+                           cols = !`Mortgage Lenders`, 
+                           names_to = "Quarter", 
+                           values_to = "Arrears")
+mortgage_arrears_tidy$Arrears <- as.double(substr(mortgage_arrears_tidy$Arrears, 1, 4), digits=3)
+```
+
+```{r, echo = FALSE}
+mortgage_arrears_tidy %>% 
+  plot_ly(x = ~`Mortgage Lenders`, y = ~Arrears, type = 'bar', color = ~Quarter) %>%
+  layout(
+         yaxis = list(title = "Mortgage in Arrears (%)"),
+         xaxis = list(title = "Mortage Lenders"),
+         hovermodel = "compare")
+```
+
+<br>
+<br>
