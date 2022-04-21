@@ -9,7 +9,7 @@ output:
 
 <br>
 
-The purpose of this webpage is to showcase some interactive visuals for the project: **Canada's Housing Market: Where Are We Heading?**, <a href="jsc370_report.pdf" download>Click to Download</a>
+The purpose of this webpage is to showcase some interactive visuals for the project: **Canada's Housing Market: Where Are We Heading?**, <a href="jsc370_report.pdf" download>Download the Report</a>
 
 <br>
 
