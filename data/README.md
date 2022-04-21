@@ -14,7 +14,7 @@ The Canada Mortgage and Housing Corporation, Absorptions and Unabsorbed Inventor
 
 Follow the link to the website, we wanted to scrape the table "Mortgages in arrears (delinquent for 90 or more days) continued downward trend across all lender types". The table contains information about mortgage in arrears across different lender types from 2020 Q1 to 2021 Q1.
 
-The following code were used to scape the table:
+The following code were used to scrape the table:
 
 ```{r}
 url <- "https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-residential-mortgages-shows-30-year-low-arrears"
