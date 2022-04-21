@@ -9,7 +9,7 @@ output:
 
 <br>
 
-The purpose of this webpage is to showcase some interactive visuals.
+The purpose of this webpage is to showcase some interactive visuals for the project: **Canada's Housing Market: Where Are We Heading?**.
 
 <br>
 
@@ -54,10 +54,10 @@ opts_chunk$set(
 
 The [Multiple Listing Service House Price Index](https://www.crea.ca/housing-market-stats/mls-home-price-index/hpi-tool/) dataset provies information of average home price and price index for various different real estates (Ex. Townhouse, apartment, etc), at different time point. We will use the dataset to plot the average home price at the year of 2022, as well as the percentage of growth of home price from January 2020 to January 2022 for different cities in Canada. We created a map, where you can see the locations of the cities. Moreover, by clicking on the markets on the map, you can see the percentage of growth and the average house price of the city. We also have created a scatterplot in representing Average House Price versus Percentage of Growth from Jan 2020 to Jan 2022. By hovering the mouse on the circles on the graph, we can see information including:
 
-- Location
-- Average House Price
-- Average HPI (House Price Index)
-- Percentage of Growth
+-   Location
+-   Average House Price
+-   Average HPI (House Price Index)
+-   Percentage of Growth
 
 From the graph, we observe that the cities that have both high price and high growth are Toronto and Hamilton. We also observe that inland cities such as Edmonton, Calgary, Winnipeg, and Saskatoon generally has relatively lower price and lower growth.
 
@@ -238,7 +238,9 @@ fm_stats_df_explore %>%
 
 ### Mortgages in Arrears
 
-From the website [Mortgages in Arrears](https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-residential-mortgages-shows-30-year-low-arrears), we scraped the table “Mortgages in arrears (delinquent for 90 or more days) continued downward trend across all lender types”. The table contains information about mortgage in arrears across different lender types from 2020 Q1 to 2021 Q1. An interactive grouped bar chart in Figure 3 was created, displaying the percentage of mortgage in arrears for different mortgage lenders by time. We observe that although the mortgage in arrears increases from 2020 Q1 to 2020 Q2, it has started to decrease after that. The reason of this is because of quantitative easing. 
+From the website [Mortgages in Arrears](https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-residential-mortgages-shows-30-year-low-arrears), we scraped the table "Mortgages in arrears (delinquent for 90 or more days) continued downward trend across all lender types". The table contains information about mortgage in arrears across different lender types from 2020 Q1 to 2021 Q1. An interactive grouped bar chart in Figure 3 was created, displaying the percentage of mortgage in arrears for different mortgage lenders by time. We observe that although the mortgage in arrears increases from 2020 Q1 to 2020 Q2, it has started to decrease after that. The reason of this is because of quantitative easing.
+
+Note that MIEs stands for Mortgage Investment Entities.
 
 ```{r, echo = FALSE}
 url <- "https://www.cmhc-schl.gc.ca/en/blog/2021/new-report-residential-mortgages-shows-30-year-low-arrears"
@@ -268,12 +270,9 @@ mortgage_arrears_tidy %>%
          hovermodel = "compare")
 ```
 
-Note that MIEs stands for Mortgage Investment Entities.
-
-
 ### CPI during COVID-19 Pandemic
 
-Real estate is known to be an investment product that performs well in high-inflation environments, which leads to a higher demand. The interactive visualizations below show that trend of CPI from January 2020 to January 2021, as well as breaking down the CPI for major categories such as food, shelter, clothing and footwear, health and personal care, energy, and services. By hovering mouse onto the markets, you are able to see the exact number of CPI at each time point. We observe that the energy sector has the most price growth, by roughly 50% from April 2020 to Jan 2020. Overall, CPI has raised significantly since 2021, and the not only the trend is increasing, the momentum is increasing as well.
+The [Consumer Price Index (CPI) dataset](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810000401) reflects the consumer prices that the Canadian is experiencing. The dataset provides the value of CPI of each time points for different product groups, recorded on a monthly basis. CPI is used to measure inflation, which can affects the demand of investing in real estate. Real estate is known to be an investment product that performs well in high-inflation environments, which leads to a higher demand. The interactive visualizations below show that trend of CPI from January 2020 to January 2021, as well as breaking down the CPI for major categories such as food, shelter, clothing and footwear, health and personal care, energy, and services. By hovering mouse onto the markets, you are able to see the exact number of CPI at each time point. We observe that the energy sector has the most price growth, by roughly 50% from April 2020 to Jan 2020. Overall, CPI has raised significantly since 2021, and the not only the trend is increasing, the momentum is increasing as well.
 
 ```{r, message=FALSE}
 cpi_df <- read_csv("data/cpi.csv")
@@ -377,7 +376,4 @@ fig <- subplot(all_items, s1, nrows = 2, margin = 0.05, heights = c(0.25,0.75)) 
 fig
 ```
 
-
-
-<br>
-<br>
+<br> <br>
