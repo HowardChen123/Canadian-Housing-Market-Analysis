@@ -9,4 +9,4 @@ To start with, there are two important things for readers to recognize. First, t
 
 In this research, we will be performing various data analysis to answer the research questions listed above.
 
-The link to the [website][https://howardchen123.github.io/Canadian-Housing-Market-Analysis/] showcases some interactive visualizations that helps answer the questions above, and it is interesting to play around. You may also access to full report by this <a href="report.pdf" download>link</a>.
+The link to the [website][https://howardchen123.github.io/Canadian-Housing-Market-Analysis/] showcases some interactive visualizations that helps answer the questions above, and it is interesting to play around. You may also access to full report by this <a href="jsc370_report.pdf" download>link</a>.
